@@ -318,13 +318,13 @@ public class TestExecuterCLISingleThread extends TestExecuterCLI  {
 																								// file
 
 			tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
-			tr.outputToFile(methodSignature);
+			tr.outputToFile(methodSignature, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return tr;
-		
+
 	}
 	public TestResultCLI runTraditionalMutantsSingleThread(String methodSignature, String[] mutantTypes, double percentage)
 			throws NoMutantException, NoMutantDirException {
