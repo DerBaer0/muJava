@@ -43,7 +43,6 @@ public class testnew {
     new JCommander(jct, args);
 
     muJavaHomePath = Util.loadConfig();
-    // muJavaHomePath= "/Users/dmark/mujava";
 
     // check if debug mode
     if (jct.isDebug() || jct.isDebugMode()) {
@@ -109,8 +108,13 @@ public class testnew {
 
         }
 
-
-        File desc = new File(muJavaHomePath + "/" + sessionName + "/src");
+        // @author Evan Valvis
+        // we want to be able to keep the source files' packages
+        String temp = source.getAbsolutePath().replace("\\", "/");
+        String packages = temp.substring(temp.indexOf("src/") + 4);
+        String packageDirectories = packages.substring(0, packages.lastIndexOf("/"));
+        File desc =
+            new File(muJavaHomePath + "/" + sessionName + "/src" + "/" + packageDirectories);
         FileUtils.copyFileToDirectory(source, desc);
 
         // compile src files
