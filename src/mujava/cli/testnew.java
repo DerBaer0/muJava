@@ -48,7 +48,6 @@ public class testnew {
     if (jct.isDebug() || jct.isDebugMode()) {
       Util.debug = true;
     }
-    System.out.println(jct.getParameters().size());
     sessionName = jct.getParameters().get(0); // set first parameter as the
                                               // session name
 
@@ -112,9 +111,12 @@ public class testnew {
         // we want to be able to keep the source files' packages
         String temp = source.getAbsolutePath().replace("\\", "/");
         String packages = temp.substring(temp.indexOf("src/") + 4);
-        String packageDirectories = packages.substring(0, packages.lastIndexOf("/"));
-        File desc =
-            new File(muJavaHomePath + "/" + sessionName + "/src" + "/" + packageDirectories);
+        // if there are no packages, we want this string to contain just a /
+        String packageDirectories = "/";
+        if (packages.lastIndexOf("/") != -1) {
+          packageDirectories += packages.substring(0, packages.lastIndexOf("/"));
+        }
+        File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
         FileUtils.copyFileToDirectory(source, desc);
 
         // compile src files
