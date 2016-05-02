@@ -54,6 +54,7 @@ public class genmutes {
     String sessionName = jct.getParameters().get(0);
 
     muJavaHomePath = Util.loadConfig();
+
     // check if debug mode
     if (jct.isDebug()) {
       Util.debug = true;
@@ -87,15 +88,16 @@ public class genmutes {
 
     // get all files in the session
     String[] file_list = new String[1];
-    // if(jct.getD())
-    // {
-    File sessionFolder = new File(muJavaHomePath + "/" + sessionName + "/src");
-    File[] listOfFilesInSession = sessionFolder.listFiles();
-    file_list = new String[listOfFilesInSession.length];
-    for (int i = 0; i < listOfFilesInSession.length; i++) {
-      file_list[i] = listOfFilesInSession[i].getName();
+    // @author Evan Valvis
+    String sessionFolder = muJavaHomePath + "/" + sessionName + "/src/";
+    List<File> listOfFilesInSession = new ArrayList<File>();
+    Util.listFiles(sessionFolder, listOfFilesInSession);
+    file_list = new String[listOfFilesInSession.size()];
+    for (int i = 0; i < listOfFilesInSession.size(); i++) {
+      String temp = listOfFilesInSession.get(i).getAbsolutePath().replace("\\", "/");
+      file_list[i] = temp.substring(sessionFolder.length(), temp.length());
+      System.out.println(file_list[i]);
     }
-
 
     // get all mutation operators selected
     HashMap<String, List<String>> ops = new HashMap<String, List<String>>(); // used
