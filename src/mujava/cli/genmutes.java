@@ -96,7 +96,6 @@ public class genmutes {
     for (int i = 0; i < listOfFilesInSession.size(); i++) {
       String temp = listOfFilesInSession.get(i).getAbsolutePath().replace("\\", "/");
       file_list[i] = temp.substring(sessionFolder.length(), temp.length());
-      System.out.println(file_list[i]);
     }
 
     // get all mutation operators selected

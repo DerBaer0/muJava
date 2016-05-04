@@ -51,25 +51,25 @@ import mujava.test.TestResultCLI;
  */
 /*
  * Three execution modes:
- * 
+ *
  * \item \textit{$-$default }
- * 
+ *
  * ``\textit{$-$default}'' defines the default behavior of \textit{runmutes}. Each time it's run, it
  * reads in the result files. For each mutant m, test case t combination, if m is dead or
  * equivalent, t is NOT run on m. If m is live, t is run on m. At the end of execution, the new
  * result will be written out to the same result file with updates. E.G. first run, 200 mutants, 100
  * killed; second run, 200-100 mutants only, 50 killed; third run, 100-50 mutants, etc.
- * 
+ *
  * \item \textit{$-$dead }
- * 
+ *
  * ``\textit{$-$dead}'' defines the dead mode of \textit{runmutes}. Each time it's run, it reads in
  * the result files. For each mutant m, test case t combination, if m is dead, or live, t IS run on
  * m. Not run on equivalent mutants. This lets us find all the tests that kill m. At the end of
  * execution, the new result will be written out to the same result file with updates. E.G. first
  * run, 200 mutants, 100 killed; second run, 200 mutants again; third run, 200, etc.
- * 
+ *
  * \item \textit{$-$fresh }
- * 
+ *
  * ``\textit{$-$fresh}'' defines the fresh mode of \textit{runmutes}. Each time it's run, it does
  * NOT read in the result files. After execution, the result files are saved as new files, with the
  * current timestamp.
@@ -142,8 +142,10 @@ public class runmutes {
     if (jct.getParameters().size() == 1) {
       // read all test names
       testSessionName = jct.getParameters().get(0);
-      File folder = new File(muJavaHomePath + "/" + testSessionName + "/testset");
-      File[] listOfFiles = folder.listFiles();
+      // @author Evan Valvis
+      String folder = muJavaHomePath + "/" + testSessionName + "/testset/";
+      List<File> listOfFiles = new ArrayList<File>();
+      Util.listFiles(folder, listOfFiles);
 
       for (File file : listOfFiles) {
         String fileName = file.getName();
@@ -167,9 +169,11 @@ public class runmutes {
       testSessionName = jct.getParameters().get(1);
 
       // make sure test file exists
-      File folder = new File(muJavaHomePath + "/" + testSessionName + "/testset");
-      File[] listOfFiles = folder.listFiles();
-      if (!hasTestFile(listOfFiles, testSetName)) {
+      // @author Evan Valvis
+      String folder = muJavaHomePath + "/" + testSessionName + "/testset/";
+      List<File> listOfFiles = new ArrayList<File>();
+      Util.listFiles(folder, listOfFiles);
+      if (!hasTestFile(listOfFiles, testSetName, folder)) {
         Util.Error("can't find test file: " + testSetName);
         return;
       }
@@ -201,11 +205,14 @@ public class runmutes {
     }
 
     String[] file_list = new String[1];
-    File sessionFolder = new File(muJavaHomePath + "/" + testSessionName + "/classes");
-    File[] listOfFilesInSession = sessionFolder.listFiles();
-    file_list = new String[listOfFilesInSession.length];
-    for (int i = 0; i < listOfFilesInSession.length; i++) {
-      file_list[i] = listOfFilesInSession[i].getName();
+    // @author Evan Valvis
+    String sessionFolder = muJavaHomePath + "/" + testSessionName + "/classes/";
+    List<File> listOfFilesInSession = new ArrayList<File>();
+    Util.listFiles(sessionFolder, listOfFilesInSession);
+    file_list = new String[listOfFilesInSession.size()];
+    for (int i = 0; i < listOfFilesInSession.size(); i++) {
+      String temp = listOfFilesInSession.get(i).getAbsolutePath().replace("\\", "/");
+      file_list[i] = temp.substring(sessionFolder.length(), temp.length());
     }
 
     if (jct.getP() > 0 && jct.getP() <= 1)
@@ -371,12 +378,16 @@ public class runmutes {
 
   }
 
-  private static boolean hasTestFile(File[] listOfFiles, String testSetName) throws Exception {
+  private static boolean hasTestFile(List<File> listOfFiles, String testSetName,
+      String sessionFolder) throws Exception {
 
-    if (listOfFiles == null)
+    if (listOfFiles.size() == 0)
       throw new Exception("invalid test folder");
     for (File file : listOfFiles) {
-      if (file.getName().equals(testSetName + ".class"))
+      // @author Evan Valvis
+      String temp = file.getAbsolutePath().replace("\\", "/");
+      String testSet = temp.substring(sessionFolder.length(), temp.length());
+      if (testSet.equals(testSetName + ".class"))
         return true;
     }
     return false;
@@ -390,8 +401,9 @@ public class runmutes {
     Util.Print("-----------------------------------------------");
     // read file
     // get all method names
-    File folder = new File(
-        MutationSystem.MUTANT_HOME + "/" + targetClassName + "/" + MutationSystem.TM_DIR_NAME);
+    // @author Evan Valvis
+    File folder = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName.replace("/", ".")
+        + "/" + MutationSystem.TM_DIR_NAME);
     File[] listOfMethods = folder.listFiles();
     if (listOfMethods == null)
       return;
@@ -408,7 +420,7 @@ public class runmutes {
     if (!methodNameList.contains("mutant_list") || mode.equals("fresh")) {
       // mode="fresh-default";
       // Util.Print("no file mode");
-      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName);
+      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName.replace("/", "."));
       test_engine.setTimeOut(timeout_sec);
 
       // add method list to engine, used for saving result at the end
@@ -441,7 +453,7 @@ public class runmutes {
       // read file
       TestResultCLI tr = new TestResultCLI();
       //
-      tr.path = MutationSystem.MUTANT_HOME + "/" + targetClassName + "/"
+      tr.path = MutationSystem.MUTANT_HOME + "/" + targetClassName.replace("/", ".") + "/"
           + MutationSystem.TM_DIR_NAME + "/mutant_list";
       tr.getResults();
 
@@ -461,7 +473,7 @@ public class runmutes {
                                                                        // listed
 
       // run
-      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName);
+      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName.replace("/", "."));
       test_engine.setTimeOut(timeout_sec);
 
       // First, read (load) test suite class.
@@ -508,7 +520,7 @@ public class runmutes {
       // set
 
       // run
-      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName);
+      TestExecuterCLI test_engine = new TestExecuterCLI(targetClassName.replace("/", "."));
       test_engine.setTimeOut(timeout_sec);
 
       // First, read (load) test suite class.
@@ -576,7 +588,7 @@ public class runmutes {
       if (TestExecuterCLI.methodList2.size() == 0) {
         // get time
         Calendar nowtime = new GregorianCalendar();
-        File f = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName + "/"
+        File f = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName.replace("/", ".") + "/"
             + MutationSystem.TM_DIR_NAME + "/" + "result_list_" + nowtime.get(Calendar.YEAR) + "_"
             + (nowtime.get(Calendar.MONTH) + 1) + "_" + nowtime.get(Calendar.DATE) + "_"
             + nowtime.get(Calendar.HOUR) + "_" + nowtime.get(Calendar.MINUTE) + "_"
@@ -634,7 +646,7 @@ public class runmutes {
     {
       // read file
       String s = null;
-      File f = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName + "/"
+      File f = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName.replace("/", ".") + "/"
           + MutationSystem.TM_DIR_NAME + "/" + "result_list" + ".csv");
 
       // no file exists, means very first run
