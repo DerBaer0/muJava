@@ -110,7 +110,7 @@ public class Util {
 			inputStream.close();
 		} catch (FileNotFoundException e) {
 			System.err.println("Warning: mujavaCLI.config not found. Using default values");
-			Util.mujavaHome = ".";
+			Util.mujavaHome = System.getenv("MUJAVA_HOME");
 			Util.debug = false;
 		}
 	}

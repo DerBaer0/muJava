@@ -55,7 +55,8 @@ public class genmutes {
     // set session name
     String sessionName = jct.getParameters().get(0);
 
-    muJavaHomePath = Util.loadConfig();
+    Util.loadConfig();
+    muJavaHomePath = Util.mujavaHome;
 
     // check if debug mode
     if (jct.isDebug()) {

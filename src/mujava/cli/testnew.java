@@ -86,45 +86,31 @@ public class testnew {
 
       // move src files into session folder
       for (String srcFile : srcFiles) {
-        // new (dir, name)
-        // check abs path or not
+      	File source = new File(srcFile);
+      	
+		if (source.isDirectory()) {
+			String session_dir_path = muJavaHomePath + "/" + sessionName;
+			File dest = new File(session_dir_path + "/src/");
+			FileUtils.copyDirectory(source, dest);
+		} else {
+		    // @author Evan Valvis
+		    // we want to be able to keep the source files' packages
+		    String temp = source.getAbsolutePath().replace("\\", "/");
+		    String packages = temp.substring(temp.indexOf("src/") + 4);
+		    // if there are no packages, we want this string to contain just a /
+		    String packageDirectories = "/";
+		    if (packages.lastIndexOf("/") != -1) {
+		      packageDirectories += packages.substring(0, packages.lastIndexOf("/"));
+		    }
+		    File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
+		    FileUtils.copyFileToDirectory(source, desc);
 
-        // need to check if srcFile has .java at the end or not
-        if (srcFile.length() > 5) {
-          if (srcFile.substring(srcFile.length() - 5).equals(".java")) // name has .java at the end,
-                                                                       // e.g. cal.java
-          {
-            // delete .java, e.g. make it cal
-            srcFile = srcFile.substring(0, srcFile.length() - 5);
-          }
-        }
-
-        File source = new File(srcFile + ".java");
-
-        if (!source.isAbsolute()) // relative path, attach path, e.g. cal.java, make it
-                                  // c:\mujava\cal.java
-        {
-          source = new File(muJavaHomePath + "/src" + java.io.File.separator + srcFile + ".java");
-
-        }
-
-        // @author Evan Valvis
-        // we want to be able to keep the source files' packages
-        String temp = source.getAbsolutePath().replace("\\", "/");
-        String packages = temp.substring(temp.indexOf("src/") + 4);
-        // if there are no packages, we want this string to contain just a /
-        String packageDirectories = "/";
-        if (packages.lastIndexOf("/") != -1) {
-          packageDirectories += packages.substring(0, packages.lastIndexOf("/"));
-        }
-        File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
-        FileUtils.copyFileToDirectory(source, desc);
-
-        // compile src files
-        // String srcName = "t";
-        boolean result = compileSrc(srcFile);
-        if (result)
-          Util.Print("Session is built successfully.");
+		    // compile src files
+		    // String srcName = "t";
+		    boolean result = compileSrc(srcFile);
+		    if (result)
+		      Util.Print("Session is built successfully.");
+		}
       }
 
     }

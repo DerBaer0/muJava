@@ -1,7 +1,7 @@
 <project default="compile">
 	<target name="compile">
 		<mkdir dir="bin"/>
-		<javac srcdir="src" destdir="bin">
+		<javac srcdir="src" destdir="bin" debug="true">
 			<classpath>
 				<pathelement path="openjava.jar"/>
 				<pathelement path="commons-io-2.4.jar"/>

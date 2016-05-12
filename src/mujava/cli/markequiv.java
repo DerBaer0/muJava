@@ -70,7 +70,9 @@ public class markequiv {
     // }
 
     List<String> parameters = jct.getParameters();
-    muJavaHomePath = Util.loadConfig();
+    Util.loadConfig();
+    muJavaHomePath = Util.mujavaHome;
+
     String session = parameters.get(parameters.size() - 1);
     parameters.remove(parameters.size() - 1);
     ArrayList<String> eqMutants = new ArrayList<>();
