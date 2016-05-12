@@ -1,0 +1,12 @@
+<project default="compile">
+	<target name="compile">
+		<mkdir dir="bin"/>
+		<javac srcdir="src" destdir="bin">
+			<classpath>
+				<pathelement path="openjava.jar"/>
+				<pathelement path="commons-io-2.4.jar"/>
+				<pathelement path="/usr/share/java/hamcrest-core.jar"/>
+			</classpath>
+		</javac>
+	</target>
+</project>
