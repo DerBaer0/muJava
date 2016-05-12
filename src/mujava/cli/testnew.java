@@ -42,7 +42,8 @@ public class testnew {
     testnewCom jct = new testnewCom();
     new JCommander(jct, args);
 
-    muJavaHomePath = Util.loadConfig();
+    Util.loadConfig();
+    muJavaHomePath = Util.mujavaHome;
 
     // check if debug mode
     if (jct.isDebug() || jct.isDebugMode()) {
