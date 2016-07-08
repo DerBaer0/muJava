@@ -217,10 +217,11 @@ public class VariableBinder extends ScopeHandler {
 			DebugOut.println("binds variable\t" + name + "\t: " + qtypename);
 		} catch (OJClassNotFoundException e) {
 			System.err.println(
-				"VariableBinder.bindName() "
+				"22 VariableBinder.bindName() "
 					+ e.toString()
 					+ " : "
 					+ qtypename);
+			e.printStackTrace();
 			System.err.println(env);
 		}
 	}

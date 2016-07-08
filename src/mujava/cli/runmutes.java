@@ -103,9 +103,9 @@ public class runmutes {
   private static int timeout_sec = 3000;
 
   /**
-   * @param args
-   * @throws Exception
-   */
+	* @param args
+	* @throws Exception
+	*/
   public static void main(String[] args) throws Exception {
     runmutesCom jct = new runmutesCom();
 
@@ -227,28 +227,28 @@ public class runmutes {
 
     ArrayList<String> typeList = new ArrayList<String>();
 		if (jct.isAll() || jct.isAllAll()) // all is selected, add all operators
-    {
+	 {
 
-      // if all is selected, all mutation operators are added
-      typeList.add("AORB");
-      typeList.add("AORS");
-      typeList.add("AOIU");
-      typeList.add("AOIS");
-      typeList.add("AODU");
-      typeList.add("AODS");
-      typeList.add("ROR");
-      typeList.add("COR");
-      typeList.add("COD");
-      typeList.add("COI");
-      typeList.add("SOR");
-      typeList.add("LOR");
-      typeList.add("LOI");
-      typeList.add("LOD");
-      typeList.add("ASRS");
-      typeList.add("SDL");
-      typeList.add("VDL");
-      typeList.add("ODL");
-      typeList.add("CDL");
+		// if all is selected, all mutation operators are added
+		typeList.add("AORB");
+		typeList.add("AORS");
+		typeList.add("AOIU");
+		typeList.add("AOIS");
+		typeList.add("AODU");
+		typeList.add("AODS");
+		typeList.add("ROR");
+		typeList.add("COR");
+		typeList.add("COD");
+		typeList.add("COI");
+		typeList.add("SOR");
+		typeList.add("LOR");
+		typeList.add("LOI");
+		typeList.add("LOD");
+		typeList.add("ASRS");
+		typeList.add("SDL");
+		typeList.add("VDL");
+		typeList.add("ODL");
+		typeList.add("CDL");
 		}
 		if (jct.isAllAll()) { // add the class mutation operators
 			typeList.add("IHI");
@@ -281,63 +281,63 @@ public class runmutes {
 			typeList.add("EMM");
 		}
 		if (!(jct.isAll() || jct.isAllAll())) { // if not all, add selected ops to the list
-      if (jct.isAORB()) {
-        typeList.add("AORB");
-      }
-      if (jct.isAORS()) {
-        typeList.add("AORS");
-      }
-      if (jct.isAOIU()) {
-        typeList.add("AOIU");
-      }
-      if (jct.isAOIS()) {
-        typeList.add("AOIS");
-      }
-      if (jct.isAODU()) {
-        typeList.add("AODU");
-      }
-      if (jct.isAODS()) {
-        typeList.add("AODS");
-      }
-      if (jct.isROR()) {
-        typeList.add("ROR");
-      }
-      if (jct.isCOR()) {
-        typeList.add("COR");
-      }
-      if (jct.isCOD()) {
-        typeList.add("COD");
-      }
-      if (jct.isCOI()) {
-        typeList.add("COI");
-      }
-      if (jct.isSOR()) {
-        typeList.add("SOR");
-      }
-      if (jct.isLOR()) {
-        typeList.add("LOR");
-      }
-      if (jct.isLOI()) {
-        typeList.add("LOI");
-      }
-      if (jct.isLOD()) {
-        typeList.add("LOD");
-      }
-      if (jct.isASRS()) {
-        typeList.add("ASRS");
-      }
-      if (jct.isSDL()) {
-        typeList.add("SDL");
-      }
-      if (jct.isVDL()) {
-        typeList.add("VDL");
-      }
-      if (jct.isCDL()) {
-        typeList.add("CDL");
-      }
-      if (jct.isODL()) {
-        typeList.add("ODL");
-      }
+		if (jct.isAORB()) {
+		  typeList.add("AORB");
+		}
+		if (jct.isAORS()) {
+		  typeList.add("AORS");
+		}
+		if (jct.isAOIU()) {
+		  typeList.add("AOIU");
+		}
+		if (jct.isAOIS()) {
+		  typeList.add("AOIS");
+		}
+		if (jct.isAODU()) {
+		  typeList.add("AODU");
+		}
+		if (jct.isAODS()) {
+		  typeList.add("AODS");
+		}
+		if (jct.isROR()) {
+		  typeList.add("ROR");
+		}
+		if (jct.isCOR()) {
+		  typeList.add("COR");
+		}
+		if (jct.isCOD()) {
+		  typeList.add("COD");
+		}
+		if (jct.isCOI()) {
+		  typeList.add("COI");
+		}
+		if (jct.isSOR()) {
+		  typeList.add("SOR");
+		}
+		if (jct.isLOR()) {
+		  typeList.add("LOR");
+		}
+		if (jct.isLOI()) {
+		  typeList.add("LOI");
+		}
+		if (jct.isLOD()) {
+		  typeList.add("LOD");
+		}
+		if (jct.isASRS()) {
+		  typeList.add("ASRS");
+		}
+		if (jct.isSDL()) {
+		  typeList.add("SDL");
+		}
+		if (jct.isVDL()) {
+		  typeList.add("VDL");
+		}
+		if (jct.isCDL()) {
+		  typeList.add("CDL");
+		}
+		if (jct.isODL()) {
+		  typeList.add("ODL");
+		}
 
 			// Class Mutants
 			if (jct.isIHI()) {

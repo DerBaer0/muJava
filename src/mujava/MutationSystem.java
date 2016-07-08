@@ -22,12 +22,15 @@ import openjava.mop.OJClass;
 import java.io.*;
 
 import mujava.util.*;
+import mujava.cli.Util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Vector;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * <p>Description: Control an entire MuJava system -- 
@@ -53,6 +56,7 @@ import java.util.Vector;
 
 public class MutationSystem extends OJSystem
 {
+   public static final int ERROR_CLASS = -1;
    public static final int INTERFACE = 0;
    public static final int ABSTRACT = 1;
    public static final int GUI = 2;
@@ -511,7 +515,8 @@ public class MutationSystem extends OJSystem
          {
             // Sometimes error occurred. However, I can't solve..
             // To muJava users: try do your best to solve it. ^^;
-            System.out.println ("[ERROR] for class " + classes[i] + " => "+ er.getMessage() );
+            System.out.println ("[ERROR] for class " + classes[i] + " => "+ er );
+            er.printStackTrace();
 			bad[i] = true; 
 			classInfo[i] = new InheritanceINFO(classes[i], "");
          }

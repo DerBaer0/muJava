@@ -113,28 +113,28 @@ public class genmutes {
 
     String[] paras = new String[] {"1", "0"};
 		if (jct.getAll() || jct.getAllAll()) // all is selected, add all operators
-    {
-      // if all is selected, all mutation operators are added
-      ops.put("AORB", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("AORS", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("AOIU", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("AOIS", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("AODU", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("AODS", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("ROR", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("COR", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("COD", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("COI", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("SOR", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("LOR", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("LOI", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("LOD", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("ASRS", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("SDL", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("ODL", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("VDL", new ArrayList<String>(Arrays.asList(paras)));
-      ops.put("CDL", new ArrayList<String>(Arrays.asList(paras)));
-      // ops.put("SDL", jct.getAll());
+		{
+			// if all is selected, all mutation operators are added
+			ops.put("AORB", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("AORS", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("AOIU", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("AOIS", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("AODU", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("AODS", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("ROR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("COR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("COD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("COI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("SOR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("LOR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("LOI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("LOD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("ASRS", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("SDL", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("ODL", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("VDL", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("CDL", new ArrayList<String>(Arrays.asList(paras)));
+			// ops.put("SDL", jct.getAll());
 		}
 		if (jct.getAllAll()) { // add all class mutants too
 			ops.put("IHI", new ArrayList<String>(Arrays.asList(paras)));

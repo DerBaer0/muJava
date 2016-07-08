@@ -253,8 +253,9 @@ public class ScopeHandlingMutantCodeWriter extends MutantCodeWriter
           if (clazz == null)  clazz = OJClass.forName( qtypename );
           env.bindVariable( name, clazz );
         } catch ( OJClassNotFoundException e ) {
-                System.err.println( "VariableBinder.bindName() " +
+                System.err.println( "11 VariableBinder.bindName() " +
                         e.toString() + " : " + qtypename );
+                    e.printStackTrace();
             System.err.println( env );
         }
     }

@@ -12,9 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
- 
- 
+ */
+
+
 package mujava;
 
 import openjava.mop.*;
@@ -33,16 +33,16 @@ import mujava.util.*;
 import com.sun.tools.javac.Main;
 
 /**
- * <p>Generate mutants according to selected mutation 
- *            operator(s) from gui.GenMutantsMain. 
- *            The original version is loaded, mutated, and compiled. 
- *            Outputs (mutated source and class files) are in the 
+ * <p>Generate mutants according to selected mutation
+ *            operator(s) from gui.GenMutantsMain.
+ *            The original version is loaded, mutated, and compiled.
+ *            Outputs (mutated source and class files) are in the
  *            -mutants folder. </p>
  * @author Yu-Seung Ma
  * @version 1.0
   */
 
-public abstract class MutantsGenerator 
+public abstract class MutantsGenerator
 {
    //private boolean debug = false;
 //	static int  counter;
@@ -55,25 +55,25 @@ public abstract class MutantsGenerator
    FileEnvironment file_env = null;
    CompilationUnit comp_unit = null;
 
-   public MutantsGenerator(File f) 
+   public MutantsGenerator(File f)
    {
       this.original_file = f;
       initPrimitiveTypes();
    }
 
-   public MutantsGenerator(File f, boolean debug_flag) 
+   public MutantsGenerator(File f, boolean debug_flag)
    {
       this(f);
       //debug = debug_flag;
    }
 
-   public MutantsGenerator(File f, String[] operator_list) 
+   public MutantsGenerator(File f, String[] operator_list)
    {
       this(f);
       operators = operator_list;
    }
 
-   public MutantsGenerator(File f, String[] operator_list, boolean debug_flag) 
+   public MutantsGenerator(File f, String[] operator_list, boolean debug_flag)
    {
       this(f, operator_list);
       //debug = debug_flag;
@@ -81,7 +81,7 @@ public abstract class MutantsGenerator
 
    /**
     * Generate and initialize parse tree from the original Java source file.
-    * Generate mutants. Arrange and compile the original Java source file.        
+    * Generate mutants. Arrange and compile the original Java source file.
     * @return
     * @throws OpenJavaException
     */
@@ -91,19 +91,13 @@ public abstract class MutantsGenerator
       Debug.print("* Generating parse tree. \n" );
 
       generateParseTree();
-      Debug.print("..done. \n" );
-      //System.out.println("0");
       Debug.print("* Initializing parse tree. \n" );
       initParseTree();
-      Debug.print("..done. \n" );
-      //System.out.println("1");
       Debug.print("* Generating Mutants \n" );
       genMutants();
-      Debug.print("..done.\n" );
-      //System.out.println("2");
       Debug.print("* Arranging original soure code. \n" );
       arrangeOriginal();
-      //System.out.println("3");
+      Debug.print("* Compiling original soure code. \n" );
       compileOriginal();
       Debug.print("..done. \n" );
       Debug.flush();
@@ -126,10 +120,10 @@ public abstract class MutantsGenerator
     */
    void generateMutant(DeclAnalyzer mutant_op)
    {
-      try 
+      try
       {
          mutant_op.translateDefinition(comp_unit);
-      } 
+      }
       catch (Exception ex)
       {
          System.err.println("fail to translate " + mutant_op.getName() + " : " + ex);
@@ -146,28 +140,28 @@ public abstract class MutantsGenerator
       {
          System.err.println(original_file + " is skipped.");
       }
-      
+
       ClassDeclarationList cdecls = comp_unit.getClassDeclarations();
       for (int j=0; j<cdecls.size(); ++j)
       {
          ClassDeclaration cdecl = cdecls.get(j);
          File outfile = null;
-         try 
+         try
          {
             outfile = new File(MutationSystem.ORIGINAL_PATH, MutationSystem.CLASS_NAME + ".java");
-            FileWriter fout = new FileWriter( outfile ); 
+            FileWriter fout = new FileWriter( outfile );
             PrintWriter out = new PrintWriter( fout );
             MutantCodeWriter writer = new MutantCodeWriter( out );
             writer.setClassName(cdecl.getName());
             comp_unit.accept( writer );
-            out.flush();  
+            out.flush();
             out.close();
-         } 
-         catch ( IOException e ) 
+         }
+         catch ( IOException e )
          {
             System.err.println( "fails to create " + outfile );
-         } 
-         catch ( ParseTreeException e ) 
+         }
+         catch ( ParseTreeException e )
          {
             System.err.println( "errors during printing " + outfile );
             e.printStackTrace();
@@ -176,7 +170,7 @@ public abstract class MutantsGenerator
    }
 
    /**
-    * Initialize parse tree 
+    * Initialize parse tree
     * @throws OpenJavaException
     */
    private void initParseTree() throws OpenJavaException
@@ -190,7 +184,7 @@ public abstract class MutantsGenerator
         // System.out.println("OJSystem.env2 :" + OJSystem.env );
          comp_unit.accept(corrector);
          //System.out.println("OJSystem.env3 :" + OJSystem.env );
-      } 
+      }
       catch (ParseTreeException e)
       {
          throw new OpenJavaException("can't initialize parse tree");
@@ -209,7 +203,7 @@ public abstract class MutantsGenerator
          parent_comp_unit[0].accept(new TypeNameQualifier(parent_file_env[0]));
          MemberAccessCorrector corrector = new MemberAccessCorrector(parent_file_env[0]);
          parent_comp_unit[0].accept(corrector);
-      } 
+      }
       catch (ParseTreeException e)
       {
          System.err.println("Encountered errors during analysis.");
@@ -234,10 +228,10 @@ public abstract class MutantsGenerator
             int len = original_file.getName().length();
             pubcls_name = original_file.getName().substring(0, len-6);
          }
-         
+
          file_env = new FileEnvironment(OJSystem.env, comp_unit, pubcls_name);
          ClassDeclarationList typedecls = comp_unit.getClassDeclarations();
-         
+
          for (int j = 0; j < typedecls.size(); ++j)
          {
             ClassDeclaration class_decl = typedecls.get(j);
@@ -246,7 +240,7 @@ public abstract class MutantsGenerator
             recordInnerClasses(c);
          }
 
-      } 
+      }
       catch (OpenJavaException e1)
       {
          throw e1;
@@ -298,12 +292,12 @@ public abstract class MutantsGenerator
             OJSystem.env.record(c.getName(), c);
             recordInnerClasses(c);
          }
-      } 
+      }
       catch (Exception e)
       {
          System.err.println("errors during parsing. " + e);
          e.printStackTrace();
-         return false; 
+         return false;
       }
       return true;
    }
@@ -312,10 +306,10 @@ public abstract class MutantsGenerator
     * Record inner-classes
     * @param c
     */
-   private static void recordInnerClasses( OJClass c ) 
+   private static void recordInnerClasses( OJClass c )
    {
       OJClass[] inners = c.getDeclaredClasses();
-      for (int i = 0; i < inners.length; ++i) 
+      for (int i = 0; i < inners.length; ++i)
       {
          OJSystem.env.record( inners[i].getName(), inners[i] );
          recordInnerClasses( inners[i] );
@@ -323,19 +317,19 @@ public abstract class MutantsGenerator
    }
 
    /** -> to move to OJClass.forParseTree() **/
-   private OJClass makeOJClass( Environment env, ClassDeclaration cdecl ) 
+   private OJClass makeOJClass( Environment env, ClassDeclaration cdecl )
    {
       OJClass result;
       String qname = env.toQualifiedName( cdecl.getName() );
       Class meta = OJSystem.getMetabind( qname );
-      try 
+      try
       {
          Constructor constr = meta.getConstructor( new Class[]{
              Environment . class,OJClass . class, ClassDeclaration . class } );
          Object[] args = new Object[]{env, null, cdecl};
          result = (OJClass) constr.newInstance(args);
-      } 
-      catch (Exception ex) 
+      }
+      catch (Exception ex)
       {
          System.err.println("errors during gererating a metaobject for " + qname);
          ex.printStackTrace();
@@ -345,7 +339,7 @@ public abstract class MutantsGenerator
    }
 
    /**
-    * Prepare a compilation unit 
+    * Prepare a compilation unit
     * @param file
     * @return
     * @throws OpenJavaException
@@ -369,15 +363,16 @@ public abstract class MutantsGenerator
 	  e.printStackTrace();
 	  return null;
       }
-      
+
       CompilationUnit result;
       try
       {
     	 System.out.println( "File " + file );
-         result = parser.CompilationUnit( OJSystem.env );         
-      } 
-      catch (ParseException e) 
+         result = parser.CompilationUnit( OJSystem.env );
+      }
+      catch (ParseException e)
       {
+         e.printStackTrace();
          throw new OpenJavaException(" can't generate parse tree");
       }
       catch (Exception e)
@@ -389,7 +384,7 @@ public abstract class MutantsGenerator
    }
 
    /**
-    * 
+    *
     * @param env
     * @param comp_unit
     * @return
@@ -400,25 +395,25 @@ public abstract class MutantsGenerator
    {
 
       ClassDeclaration cd = comp_unit.getPublicClass();
-      if (cd != null) 
+      if (cd != null)
       {
          return cd.getName();
       }
-      else 
+      else
     	 return null;
    }
 
    /**
-    * Compile mutants 
+    * Compile mutants
     */
    public void compileMutants()
    {
        // Lin add a counter 12/12/13
        int counter = 0;
        String fileName = new String();
-	   
+
       File f = new File(MutationSystem.MUTANT_PATH);
-      
+
       String[] s = f.list(new MutantDirFilter());
 
       for (int i=0; i<s.length; i++)
@@ -427,8 +422,8 @@ public abstract class MutantsGenerator
          String[] target_file = target_dir.list(new ExtensionFilter("java"));
          fileName = target_file[0];
 
-         
-         
+
+
          Vector v = new Vector();
          for (int j=0; j<target_file.length; j++)
          {
@@ -447,14 +442,14 @@ public abstract class MutantsGenerator
          {
         // result = 0 : SUCCESS,   result = 1 : FALSE
         //int result = Main.compile(pars,new PrintWriter(new FileOutputStream("temp")));
-        	 
+
         	 /*
         	  * 12/19/13 Lin modified:
-        	  * if not in debug mode, for not showing the compile result when some 
+        	  * if not in debug mode, for not showing the compile result when some
         	  * mutants can't pass compiler
         	  * if in debug mode, display
         	  */
-        	 
+
 				int result;
 				if (Util.debug)
 					result = Main.compile(pars);
@@ -465,23 +460,23 @@ public abstract class MutantsGenerator
 
 					result = Main.compile(pars, out);
 					tempCompileResultFile.delete();
-					
+
 				}
-            
-            
+
+
             if (result == 0)
             {
-               Debug.print("+" + s[i] + "   ");
+               //Debug.print("+" + s[i] + "   ");
                counter++;
             }
             else
             {
-               Debug.print("-" + s[i] + "   ");
+               Debug.println("-" + s[i] + "   ");
              // delete directory
                File dir_name = new File(MutationSystem.MUTANT_PATH + "/" + s[i]);
                File[] mutants = dir_name.listFiles();
                boolean tr = false;
-               
+
                for (int j=0; j<mutants.length; j++)
                {
             // [tricky solution] It can produce loop -_-;;
@@ -491,21 +486,21 @@ public abstract class MutantsGenerator
                   }
                   tr = false;
                }
-               
+
                while (!tr)
                {
                   tr = dir_name.delete();
                }
             }
-         } 
+         }
          catch (Exception e)
          {
             System.err.println(e);
          }
       }
-      Debug.println();
-      
-      
+      //Debug.println();
+
+
       // Lin add printer total mutants
       Util.Total = Util.Total+counter;
 //      System.out
@@ -525,6 +520,7 @@ public abstract class MutantsGenerator
       {
       // result = 0 : SUCCESS,   result = 1 : FALSE
       //int result = Main.compile(pars,new PrintWriter(new FileOutputStream("temp")));
+         System.out.println("Compile command: '" + Arrays.toString(pars) + "'");
          Main.compile(pars);
       }
       catch (NoClassDefFoundError e) {
@@ -541,7 +537,7 @@ public abstract class MutantsGenerator
    }
 
 
-   private static void initPrimitiveTypes() 
+   private static void initPrimitiveTypes()
    {
       OJSystem.initConstants();
    }
@@ -556,7 +552,7 @@ public abstract class MutantsGenerator
    {
       for (int i=0; i<list.length; i++)
       {
-         if (list[i].equals(item)) 
+         if (list[i].equals(item))
             return true;
       }
       return false;

@@ -75,8 +75,6 @@ public class TestExecuterCLI extends TestExecuter {
 			Util.DebugPrint(testSet);
 			original_executer = myLoader.loadTestClass(testSet);
 			original_obj = original_executer.newInstance(); // initialization of
-																											// the test set
-																											// class
 			if (original_obj == null) {
 				System.out.println("Can't instantiace original object");
 				return false;
@@ -90,6 +88,7 @@ public class TestExecuterCLI extends TestExecuter {
 			}
 		} catch (Exception e) {
 			System.err.println(e);
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -484,6 +483,7 @@ public class TestExecuterCLI extends TestExecuter {
 						// run each method
 						runMutants(test_result, readSignature, mutantTypes, percentage, true);
 					} catch (NoMutantException e) {
+						Util.DebugPrint("No mutant exception for " + readSignature);
 					}
 					readSignature = reader.readLine();
 				}
