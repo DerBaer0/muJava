@@ -39,7 +39,11 @@ import org.apache.commons.io.IOUtils;
 public class Util {
 	public static int Total = 0;
 	public static boolean debug = false;
-	public static String mujavaHome = ".";
+	public static String mujavaHome = ".";	// this is where the mutation folder will be located
+	public static String srcBase = "";		// Base dir of the java sources (base for packaging paths)
+	public static boolean doCompile = true;	// Compile the sources
+	public static String classesDir = null;	// directory (relativ) containing precompiled classes (only if 'doCompile=false')
+	public static String extraCP = "";		// extra classpath for compiling
 
 	// all mutants in a class
 	public static Vector mutants = new Vector();
@@ -74,8 +78,12 @@ public class Util {
 	}
 
 	public static void DebugPrint(String msg) {
+		Debug(msg);
+	}
+
+	public static void Debug(String msg) {
 		if (debug)
-			System.out.println(msg);
+			System.out.println("[DEBUG]\t" + msg);
 	}
 
 	public static void Print(String msg) {
@@ -86,8 +94,16 @@ public class Util {
 	 * load config file
 	 */
 	static void loadConfig() throws IOException {
+		loadConfig("");
+	}
+
+	static void loadConfig(String session) throws IOException {
+		if (session.equals("")) {
+			session = "mujavaCLI";
+		}
 		try {
-			FileInputStream inputStream = new FileInputStream("mujavaCLI.config");
+			Util.Print("Loading session '" + session + "'");
+			FileInputStream inputStream = new FileInputStream(session + ".config");
 
 			String input = IOUtils.toString(inputStream);
 			String[] inputs = input.split("\n");
@@ -102,6 +118,19 @@ public class Util {
 					} else {
 						Util.debug = false;
 					}
+				} else if (s.indexOf("srcBase=") == 0) {
+					Util.srcBase = s.replace("srcBase=", "");
+				} else if (s.indexOf("extraCP=") == 0) {
+					Util.extraCP = s.replace("extraCP=", "");
+				} else if (s.indexOf("classesDir=") == 0) {
+					Util.classesDir = s.replace("classesDir=", "");
+				} else if (s.indexOf("doCompile=") == 0) {
+					String dc = s.replace("doCompile=", "");
+					if (dc.equals("true")) {
+						Util.doCompile = true;
+					} else {
+						Util.doCompile = false;
+					}
 				} else {
 					System.err.println("Could not parse line '" + s + "' in mujavaCLI.config. Ignoring.");
 				}
@@ -109,10 +138,13 @@ public class Util {
 
 			inputStream.close();
 		} catch (FileNotFoundException e) {
-			System.err.println("Warning: mujavaCLI.config not found. Using default values");
+			System.err.println("Warning: " + session + ".config not found. Using default values");
 			Util.mujavaHome = System.getenv("MUJAVA_HOME");
 			Util.debug = false;
 		}
+		
+		Util.Debug("setting mujavaHome to '" + Util.mujavaHome + "'");
+		Util.Debug("setting srcBase to '" + Util.srcBase + "'");
 	}
 
 	/**
