@@ -68,12 +68,12 @@ public class markequiv {
     // else {
     // return;
     // }
-
     List<String> parameters = jct.getParameters();
-    Util.loadConfig();
+    String session = parameters.get(parameters.size() - 1);
+
+    Util.loadConfig(session);
     muJavaHomePath = Util.mujavaHome;
 
-    String session = parameters.get(parameters.size() - 1);
     parameters.remove(parameters.size() - 1);
     ArrayList<String> eqMutants = new ArrayList<>();
     eqMutants.addAll(parameters);

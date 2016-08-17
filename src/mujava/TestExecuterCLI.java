@@ -60,9 +60,16 @@ public class TestExecuterCLI extends TestExecuter {
 	public static ArrayList<String> methodList2 = new ArrayList<>();
 	public static ArrayList<String> classMutsList = new ArrayList<>();
 
+	public static OriginalLoader myLoader;
+
 	public TestExecuterCLI(String targetClassName) {
 		super(targetClassName);
-
+		try {
+//			myLoader = new OriginalLoader();
+		} catch (Exception e) {
+			Util.Error("Unknown here");
+			System.exit(1);
+		}
 	}
 
 
@@ -142,11 +149,17 @@ public class TestExecuterCLI extends TestExecuter {
 	public void computeOriginalTestResults() {
 		Debug.println(
 				"\n\n======================================== Generating Original Test Results ========================================");
+		if (testCases == null) {
+			Debug.println("ERROR: No Testcases specified");
+			return;
+		}
 		try {
 			// initialize the original results to "pass"
 			// later the results of the failed test cases will be updated
+			Util.DebugPrint("Testcases: " + testCases.length);
 			for (int k = 0; k < testCases.length; k++) {
-				Annotation[] annotations = testCases[k].getDeclaredAnnotations();
+				Annotation[] annotations = testCases[k].getAnnotations();
+				Util.DebugPrint("Annotations: " + annotations.length + " in " + testCases[k].toGenericString());
 				for (Annotation annotation : annotations) {
 					// System.out.println("name: " + testCases[k].getName() +
 					// annotation.toString() +
@@ -731,6 +744,7 @@ public class TestExecuterCLI extends TestExecuter {
 				for (int k = 0; k < junitTests.size(); k++) {
 					String name = junitTests.get(k);
 					if (!mutantResults.get(name).equals(originalResults.get(name))) {
+						Util.DebugPrint("Differes: Original: " + originalResults.get(name) + ", mutant: " + mutantResults.get(name));
 						sign = true;
 						// update the final results by tests
 						if (finalTestResults.get(name).equals(""))
@@ -744,6 +758,11 @@ public class TestExecuterCLI extends TestExecuter {
 							finalMutantResults.put(mutant_name,
 									finalMutantResults.get(mutant_name) + ", " + name);
 					}
+				}
+				if (sign) {
+					Util.DebugPrint("Killed mutant");
+				} else {
+					Util.DebugPrint("Not killing with " + junitTests.size());
 				}
 				if (tradMutants) {
 					if (sign == true)

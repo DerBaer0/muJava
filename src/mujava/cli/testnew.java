@@ -42,15 +42,16 @@ public class testnew {
     testnewCom jct = new testnewCom();
     new JCommander(jct, args);
 
-    Util.loadConfig();
-    muJavaHomePath = Util.mujavaHome;
-
     // check if debug mode
     if (jct.isDebug() || jct.isDebugMode()) {
       Util.debug = true;
     }
     sessionName = jct.getParameters().get(0); // set first parameter as the
                                               // session name
+
+    Util.loadConfig(sessionName);
+    muJavaHomePath = Util.mujavaHome;
+	muJavaHomePath = "/home/derbaer/hg/MutTools/muJava/bin"; // FIXME: hardcoded
 
     ArrayList<String> srcFiles = new ArrayList<>();
 
@@ -88,10 +89,22 @@ public class testnew {
       for (String srcFile : srcFiles) {
       	File source = new File(srcFile);
       	
+      	boolean result = false;
 		if (source.isDirectory()) {
+			source = new File(srcFile + "/" + Util.srcBase);
 			String session_dir_path = muJavaHomePath + "/" + sessionName;
 			File dest = new File(session_dir_path + "/src/");
 			FileUtils.copyDirectory(source, dest);
+			if (!Util.doCompile) { // FIXME: need else path?
+				// copy (hopefully previously compiled) classes
+				File destCls = new File(session_dir_path + "/classes/");
+				String clsDir = source + "/classes"; // wild guess
+				if (Util.classesDir != null) {
+					clsDir = srcFile + "/" + Util.classesDir;
+				}
+				FileUtils.copyDirectory(new File(clsDir), destCls);
+			}
+			result = true;
 		} else {
 		    // @author Evan Valvis
 		    // we want to be able to keep the source files' packages
@@ -105,14 +118,22 @@ public class testnew {
 		    File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
 		    FileUtils.copyFileToDirectory(source, desc);
 
-		    // compile src files
-		    // String srcName = "t";
-		    boolean result = compileSrc(srcFile);
-		    if (result)
-		      Util.Print("Session is built successfully.");
+			// compile src files
+			if (Util.doCompile) {
+				result = compileSrc(srcFile);
+				if (!result) {
+					Util.Error("Failed compiling source location " + srcFile + ". Aborting.");
+					return;
+				}
+			} else {
+				File destCls = new File(muJavaHomePath + "/" + sessionName + "/classes" + packageDirectories);
+				File clsSrc = new File(source.getAbsolutePath().replace(".java", ".class"));
+				FileUtils.copyFileToDirectory(clsSrc, destCls);
+				result = true;
+			}
 		}
       }
-
+      Util.Print("Created Session with " + srcFiles.size() + " source locations");
     }
 
     // System.exit(0);

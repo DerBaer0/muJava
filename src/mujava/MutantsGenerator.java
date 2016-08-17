@@ -347,11 +347,12 @@ public abstract class MutantsGenerator
    private static CompilationUnit parse( File file ) throws OpenJavaException
    {
       Parser parser;
+	  System.out.println(">> Parsing file " + file);
       try
       {
-         parser = new Parser(new java.io.FileInputStream( file ) );        
-      } 
-      catch ( java.io.FileNotFoundException e ) 
+         parser = new Parser(new java.io.FileInputStream( file ) );
+      }
+      catch ( java.io.FileNotFoundException e )
       {
          System.err.println( "File " + file + " not found." );
          return null;

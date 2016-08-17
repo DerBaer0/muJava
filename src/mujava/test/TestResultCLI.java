@@ -371,18 +371,26 @@ public class TestResultCLI extends TestResult {
 					+ oldTestResult.eq_mutants.size();
 			Util.Print("\nTotal mutants killed: " + oldTestResult.killed_mutants.size());
 			Util.Print("Total mutants: " + total);
-			double ms = (double)oldTestResult.killed_mutants.size() / (double)total;
-			DecimalFormat df = new DecimalFormat();
-			df.setMaximumFractionDigits(4);
-			Util.Print("Mutation Score: " + df.format(ms));
+			String score = "-";
+			if (total != 0) {
+				double ms = (double)oldTestResult.killed_mutants.size() / (double)total;
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(4);
+				score = df.format(ms);
+			}
+			Util.Print("Mutation Score: " + score);
 		} else {// file not exist, directly display
 			int total = killed_mutants.size() + live_mutants.size() + eq_mutants.size();
 			Util.Print("\nTotal mutants killed: " + killed_mutants.size());
 			Util.Print("Total mutants: " + total);
-			double ms = (double)killed_mutants.size() / (double)total;
-			DecimalFormat df = new DecimalFormat();
-			df.setMaximumFractionDigits(4);
-			Util.Print("Mutation Score: " + df.format(ms));
+			String score = "-";
+			if (total != 0) {
+				double ms = (double)killed_mutants.size() / (double)total;
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(4);
+				score = df.format(ms);
+			}
+			Util.Print("Mutation Score: " + score);
 		}
 		Util.Print("Please look at the result files (mutant_list and result_list.csv) for details."
 				+ " \nUse \"markequiv\" command to mark equivalent mutants.");

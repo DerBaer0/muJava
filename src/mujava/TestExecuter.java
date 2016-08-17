@@ -259,8 +259,10 @@ public class TestExecuter {
 	  try{   	  
     	  //initialize the original results to "pass"
     	  //later the results of the failed test cases will be updated
+    	  System.err.println("tests: " + testCases.length);
           for(int k = 0;k < testCases.length;k++){
           	Annotation[] annotations = testCases[k].getDeclaredAnnotations();
+          	System.err.println("annos: " + annotations.length);
             	for(Annotation annotation : annotations)
             	{
             		//System.out.println("name: " + testCases[k].getName() + annotation.toString() + annotation.toString().indexOf("@org.junit.Test"));

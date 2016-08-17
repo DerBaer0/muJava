@@ -93,7 +93,7 @@ public class Util {
 	/**
 	 * load config file
 	 */
-	static void loadConfig() throws IOException {
+	static void loadConfig(String session) throws IOException {
 		loadConfig("");
 	}
 

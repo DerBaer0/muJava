@@ -154,9 +154,34 @@ public class MutationSystem extends OJSystem
    // Upsorn: (05/18/2009) added mutation operators' description
    public static String[] op_desc = {   "" };
    
-   
-   
+	public MutationSystem() {
 
+	}
+
+	public static int getClassTypeFromSource(String file_name) {
+		try {
+			FileInputStream inputStream = new FileInputStream(file_name);
+
+			String input = IOUtils.toString(inputStream);
+			String[] inputs = input.split("\n");
+		
+			String className = file_name.substring(file_name.lastIndexOf("/") + 1, file_name.length() - 5);
+			for (String s : inputs) {
+				// search for class name 
+				// not inside a comment (heuristic)
+				if (s.indexOf(className) != -1 && s.indexOf("*") == -1) {
+					if (s.indexOf("interface") != -1) return INTERFACE;
+					if (s.indexOf("abstract") != -1) return ABSTRACT;
+					return NORMAL;
+				}
+			}
+			System.err.println("Could not determin class type for " + className + " in file " + file_name);
+		} catch (Exception e) {
+			System.err.println(e);
+			return ERROR_CLASS;
+		}
+		return ERROR_CLASS;
+	}
    
  /**
    * Return type of class.
@@ -193,8 +218,8 @@ public class MutationSystem extends OJSystem
          
          return NORMAL;
       } 
-      catch(Exception e)  {   return -1;   }
-      catch(Error e)  {   return -1;  }
+      catch(Exception e)  {   System.err.println("Exception: " + e); return ERROR_CLASS;   }
+      catch(Error e)  {   System.err.println("Error: " + e); return ERROR_CLASS;  }
    }
    
 
@@ -393,11 +418,23 @@ public class MutationSystem extends OJSystem
       File[] classF = dirF.listFiles (new ExtensionFilter("class"));      
       if (classF != null)
       {
+         int baseLen = 0;
          classes = new String[classF.length];
+         try {
+	         baseLen = (new File(MutationSystem.CLASS_PATH)).getCanonicalPath().length();
+	     } catch (IOException e) {
+        	System.err.println("[ERROR] Failed to get canonical path for CLASSPATH " + MutationSystem.CLASS_PATH);
+        	return null;
+        }
          for(int k=0; k<classF.length; k++) 
          {
-            temp = classF[k].getAbsolutePath();
-            classes[k] = temp.substring(MutationSystem.CLASS_PATH.length()+1, temp.length()-".class".length());
+         	try {
+	            temp = classF[k].getCanonicalPath();
+	        } catch (IOException e) {
+	        	System.err.println("[ERROR] Failed to get canonical path for " + classF[k]);
+	        	continue;
+	        }
+            classes[k] = temp.substring(baseLen + 1, temp.length()-".class".length());
             classes[k] = classes[k].replace('\\', '.');
             classes[k] = classes[k].replace('/', '.');
          }
@@ -488,9 +525,14 @@ public class MutationSystem extends OJSystem
          bad[i] = false;
          try
          {       	
-         	String classpath = System.getProperty("java.class.path");
+         	// FIXME: obsolete after inserting in constructor?
          	//add the class path dynamically
          	addURL(MutationSystem.CLASS_PATH);
+         	String paths [] = Util.extraCP.split(":");
+         	Util.Error("Classpath: found extra " + Util.extraCP);
+         	for (String path : paths) {
+	         	addURL(path);
+	        }
             //create a new class from the class name
             Class c = Class.forName(classes[i]);
             //create the parent class of the class above
@@ -550,17 +592,23 @@ public class MutationSystem extends OJSystem
     * @throws Exception
     */
    
-   public static void addURL(String classPath) throws Exception {
-		  Method addClass = null;
-		  ClassLoader cl = null;
-		  File f = null;
+	public static void addURL(String classPath) throws Exception {
+		Method addClass = null;
+		ClassLoader cl = null;
+		File f = null;
 
-		  addClass = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] {URL.class});
-		  addClass.setAccessible(true);
-		  f = new File(classPath);
-		  cl = ClassLoader.getSystemClassLoader();
-		  addClass.invoke(cl, new Object[] { f.toURL() });
+		addClass = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] {URL.class});
+		addClass.setAccessible(true);
+		f = new File(classPath);
+		if (!f.exists()) {
+			Util.Error("Classpath '" + classPath + "' does not exist");
+			return;
+		} else {
+			Util.Error("Classpath adding '" + classPath + "'");
 		}
+		cl = ClassLoader.getSystemClassLoader();
+		addClass.invoke(cl, new Object[] { f.toURL() });
+	}
 
   /** Re-setting MuJava structure for give class name <br>
    * @param name of class (including package name) */
