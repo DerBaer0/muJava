@@ -35,165 +35,162 @@ import com.beust.jcommander.JCommander;
  * @version 1.0
  */
 public class testnew {
-  static String sessionName = new String();
-  static String muJavaHomePath = new String();
+	static String sessionName = new String();
+	static String muJavaHomePath = new String();
 
-  public static void main(String[] args) throws IOException {
-    testnewCom jct = new testnewCom();
-    new JCommander(jct, args);
+	public static void main(String[] args) throws IOException {
+		testnewCom jct = new testnewCom();
+		new JCommander(jct, args);
 
-    // check if debug mode
-    if (jct.isDebug() || jct.isDebugMode()) {
-      Util.debug = true;
-    }
-    sessionName = jct.getParameters().get(0); // set first parameter as the
-                                              // session name
-
-    Util.loadConfig(sessionName);
-    muJavaHomePath = Util.mujavaHome;
-	muJavaHomePath = "/home/derbaer/hg/MutTools/muJava/bin"; // FIXME: hardcoded
-
-    ArrayList<String> srcFiles = new ArrayList<>();
-
-    for (int i = 1; i < jct.getParameters().size(); i++) {
-      srcFiles.add(jct.getParameters().get(i)); // retrieve all src file
-                                                // names from parameters
-    }
-
-    // get all existing session name
-    File folder = new File(muJavaHomePath);
-    if (!folder.isDirectory()) {
-      Util.Error("ERROR: cannot locate the folder specified in mujava.config");
-      return;
-    }
-    File[] listOfFiles = folder.listFiles();
-    // null checking
-    // check the specified folder has files or not
-    if (listOfFiles == null) {
-      Util.Error("ERROR: no files in the muJava home folder " + muJavaHomePath);
-      return;
-    }
-    List<String> fileNameList = new ArrayList<>();
-    for (File file : listOfFiles) {
-      fileNameList.add(file.getName());
-    }
-
-    // check if the session is new or not
-    if (fileNameList.contains(sessionName)) {
-      Util.Error("Session already exists.");
-    } else {
-      // create sub-directory for the session
-      setupSessionDirectory(sessionName);
-
-      // move src files into session folder
-      for (String srcFile : srcFiles) {
-      	File source = new File(srcFile);
-      	
-      	boolean result = false;
-		if (source.isDirectory()) {
-			source = new File(srcFile + "/" + Util.srcBase);
-			String session_dir_path = muJavaHomePath + "/" + sessionName;
-			File dest = new File(session_dir_path + "/src/");
-			FileUtils.copyDirectory(source, dest);
-			if (!Util.doCompile) { // FIXME: need else path?
-				// copy (hopefully previously compiled) classes
-				File destCls = new File(session_dir_path + "/classes/");
-				String clsDir = source + "/classes"; // wild guess
-				if (Util.classesDir != null) {
-					clsDir = srcFile + "/" + Util.classesDir;
-				}
-				FileUtils.copyDirectory(new File(clsDir), destCls);
-			}
-			result = true;
-		} else {
-		    // @author Evan Valvis
-		    // we want to be able to keep the source files' packages
-		    String temp = source.getAbsolutePath().replace("\\", "/");
-		    String packages = temp.substring(temp.indexOf("src/") + 4);
-		    // if there are no packages, we want this string to contain just a /
-		    String packageDirectories = "/";
-		    if (packages.lastIndexOf("/") != -1) {
-		      packageDirectories += packages.substring(0, packages.lastIndexOf("/"));
-		    }
-		    File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
-		    FileUtils.copyFileToDirectory(source, desc);
-
-			// compile src files
-			if (Util.doCompile) {
-				result = compileSrc(srcFile);
-				if (!result) {
-					Util.Error("Failed compiling source location " + srcFile + ". Aborting.");
-					return;
-				}
-			} else {
-				File destCls = new File(muJavaHomePath + "/" + sessionName + "/classes" + packageDirectories);
-				File clsSrc = new File(source.getAbsolutePath().replace(".java", ".class"));
-				FileUtils.copyFileToDirectory(clsSrc, destCls);
-				result = true;
-			}
+		// check if debug mode
+		if (jct.isDebug() || jct.isDebugMode()) {
+			Util.debug = true;
 		}
-      }
-      Util.Print("Created Session with " + srcFiles.size() + " source locations");
-    }
+	
+		// set first parameter as the session name
+		sessionName = jct.getParameters().get(0);
 
-    // System.exit(0);
-  }
+		Util.loadConfig(sessionName);
+		muJavaHomePath = Util.mujavaHome;
 
-  private static void setupSessionDirectory(String sessionName) {
-    String session_dir_path = muJavaHomePath + "/" + sessionName;
-    // Util.Print(mutant_dir_path);
+		ArrayList<String> srcFiles = new ArrayList<>();
 
-    // build the session folders
+		for (int i = 1; i < jct.getParameters().size(); i++) {
+			srcFiles.add(jct.getParameters().get(i));
+		}
 
-    makeDir(new File(session_dir_path));
-    makeDir(new File(session_dir_path + "/src"));
-    makeDir(new File(session_dir_path + "/classes"));
-    makeDir(new File(session_dir_path + "/result"));
-    makeDir(new File(session_dir_path + "/testset"));
+		// get all existing session name
+		File folder = new File(muJavaHomePath);
+		if (!folder.isDirectory()) {
+			Util.Error("ERROR: cannot locate the folder specified in mujava.config");
+			return;
+		}
+		File[] listOfFiles = folder.listFiles();
+		// check the specified folder has files or not
+		if (listOfFiles == null) {
+			Util.Error("ERROR: no files in the muJava home folder " + muJavaHomePath);
+			return;
+		}
+		List<String> fileNameList = new ArrayList<>();
+		for (File file : listOfFiles) {
+			fileNameList.add(file.getName());
+		}
 
-  }
+		// check if the session is new or not
+		if (fileNameList.contains(sessionName)) {
+			Util.Error("Session already exists. (Folder " + sessionName + " in " + muJavaHomePath + ")");
+		} else {
+			// create sub-directory for the session
+			setupSessionDirectory(sessionName);
 
-  /*
-   * compile the src and put it into session's classes folder
-   */
-  public static boolean compileSrc(String srcName) {
-    String session_dir_path = muJavaHomePath + "/" + sessionName;
+			// move src files into session folder
+			for (String srcFile : srcFiles) {
+				File source = new File(srcFile);
+			
+				boolean result = false;
+				if (source.isDirectory()) {
+					source = new File(srcFile + "/" + Util.srcBase);
+					String session_dir_path = muJavaHomePath + "/" + sessionName;
+					File dest = new File(session_dir_path + "/src/");
+					FileUtils.copyDirectory(source, dest);
+					if (!Util.doCompile) { // FIXME: need else path?
+						// copy (hopefully previously compiled) classes
+						File destCls = new File(session_dir_path + "/classes/");
+						String clsDir = source + "/classes"; // wild guess
+						if (Util.classesDir != null) {
+							clsDir = srcFile + "/" + Util.classesDir;
+						}
+						FileUtils.copyDirectory(new File(clsDir), destCls);
+					}
+					result = true;
+				} else {
+					// @author Evan Valvis
+					// we want to be able to keep the source files' packages
+					String temp = source.getAbsolutePath().replace("\\", "/");
+					String packages = temp.substring(temp.indexOf("src/") + 4);
+					// if there are no packages, we want this string to contain just a /
+					String packageDirectories = "/";
+					if (packages.lastIndexOf("/") != -1) {
+						packageDirectories += packages.substring(0, packages.lastIndexOf("/"));
+					}
+					File desc = new File(muJavaHomePath + "/" + sessionName + "/src" + packageDirectories);
+					FileUtils.copyFileToDirectory(source, desc);
 
-    // check if absolute path or not
-    File file = new File(srcName + ".java");
-    String src_dir_path = new String();
-    if (!file.isAbsolute()) {
-      src_dir_path = muJavaHomePath + "/src" + java.io.File.separator + srcName + ".java";
-    } else {
-      src_dir_path = srcName + ".java";
-    }
+					// compile src files
+					if (Util.doCompile) {
+						result = compileSrc(srcFile);
+						if (!result) {
+							Util.Error("Failed compiling source location " + srcFile + ". Aborting.");
+							return;
+						}
+					} else {
+						File destCls = new File(muJavaHomePath + "/" + sessionName + "/classes" + packageDirectories);
+						File clsSrc = new File(source.getAbsolutePath().replace(".java", ".class"));
+						FileUtils.copyFileToDirectory(clsSrc, destCls);
+						result = true;
+					}
+				}
+			}
+			Util.Print("Created Session with " + srcFiles.size() + " source locations");
+		}
 
-    String[] args = new String[] {"-d", session_dir_path + "/classes", src_dir_path};
-    int status = com.sun.tools.javac.Main.compile(args);
+		// System.exit(0);
+	}
 
-    if (status != 0) {
-      Util.Error("Can't compile src file, please compile manually.");
-      return false;
-    } else {
-      Util.Print("Source file is compiled successfully.");
-    }
-    return true;
+	private static void setupSessionDirectory(String sessionName) {
+		String session_dir_path = muJavaHomePath + "/" + sessionName;
+		// Util.Print(mutant_dir_path);
 
-  }
+		// build the session folders
 
-  /*
-   * build the directory
-   */
+		makeDir(new File(session_dir_path));
+		makeDir(new File(session_dir_path + "/src"));
+		makeDir(new File(session_dir_path + "/classes"));
+		makeDir(new File(session_dir_path + "/result"));
+		makeDir(new File(session_dir_path + "/testset"));
 
-  static void makeDir(File dir) {
-    Util.DebugPrint("\nMake " + dir.getAbsolutePath() + " directory...");
-    boolean newly_made = dir.mkdir();
-    if (!newly_made) {
-      Util.Error(dir.getAbsolutePath() + " directory exists already.");
-    } else {
-      Util.DebugPrint("Making " + dir.getAbsolutePath() + " directory " + " ...done.");
-    }
-  }
+	}
 
+	/*
+	 * compile the src and put it into session's classes folder
+	 */
+	public static boolean compileSrc(String srcName) {
+		String session_dir_path = muJavaHomePath + "/" + sessionName;
+
+		// check if absolute path or not
+		if (!srcName.endsWith(".java")) {
+			srcName += ".java";
+		}
+		File file = new File(srcName + ".java");
+		if (!file.isAbsolute()) {
+			srcName = muJavaHomePath + "/src" + java.io.File.separator + srcName;
+		}
+
+		String[] args = new String[] {"-d", session_dir_path + "/classes", srcName};
+		int status = com.sun.tools.javac.Main.compile(args);
+
+		if (status != 0) {
+			Util.Error("Can't compile src file, please compile manually.");
+			return false;
+		} else {
+			Util.Print("Source file is compiled successfully.");
+		}
+		return true;
+
+	}
+
+	/*
+	 * build the directory
+	 */
+
+	static void makeDir(File dir) {
+		Util.DebugPrint("\nMake " + dir.getAbsolutePath() + " directory...");
+		boolean newly_made = dir.mkdir();
+		if (!newly_made) {
+			Util.Error(dir.getAbsolutePath() + " directory exists already.");
+		} else {
+			Util.DebugPrint("Making " + dir.getAbsolutePath() + " directory " + " ...done.");
+		}
+	}
 
 }
