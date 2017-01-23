@@ -285,7 +285,7 @@ public class runmutes {
 		}
 
 		ArrayList<String> typeList = new ArrayList<String>();
-		if (jct.isAll()) // all is selected, add all operators
+		if (jct.isAll() || jct.isAllAll()) // all is selected, add all operators
 		{
 
 			// if all is selected, all mutation operators are added
@@ -308,7 +308,38 @@ public class runmutes {
 			typeList.add("VDL");
 			typeList.add("ODL");
 			typeList.add("CDL");
-		} else { // if not all, add selected ops to the list
+		}
+		if (jct.isAllAll()) { // add the class mutation operators
+			typeList.add("IHI");
+			typeList.add("IHD");
+			typeList.add("IOD");
+			typeList.add("IOP");
+			typeList.add("IOR");
+			typeList.add("ISI");
+			typeList.add("ISD");
+			typeList.add("IPC");
+			typeList.add("PNC");
+			typeList.add("PMD");
+			typeList.add("PPD");
+			typeList.add("PCI");
+			typeList.add("PCC");
+			typeList.add("PCD");
+			typeList.add("PRV");
+			typeList.add("OMR");
+			typeList.add("OMD");
+			typeList.add("OAN");
+			typeList.add("JTI");
+			typeList.add("JTD");
+			typeList.add("JSI");
+			typeList.add("JSD");
+			typeList.add("JID");
+			typeList.add("JDC");
+			typeList.add("EOA");
+			typeList.add("EOC");
+			typeList.add("EAM");
+			typeList.add("EMM");
+		}
+		if (!(jct.isAll() || jct.isAllAll())) { // if not all, add selected ops to the list
 			if (jct.isAORB()) {
 				typeList.add("AORB");
 			}
@@ -366,9 +397,95 @@ public class runmutes {
 			if (jct.isODL()) {
 				typeList.add("ODL");
 			}
+
+			// Class Mutants
+			if (jct.isIHI()) {
+				typeList.add("IHI");
+			}
+			if (jct.isIHD()) {
+				typeList.add("IHD");
+			}
+			if (jct.isIOD()) {
+				typeList.add("IOD");
+			}
+			if (jct.isIOP()) {
+				typeList.add("IOP");
+			}
+			if (jct.isIOR()) {
+				typeList.add("IOR");
+			}
+			if (jct.isISI()) {
+				typeList.add("ISI");
+			}
+			if (jct.isISD()) {
+				typeList.add("ISD");
+			}
+			if (jct.isIPC()) {
+				typeList.add("IPC");
+			}
+			if (jct.isPNC()) {
+				typeList.add("PNC");
+			}
+			if (jct.isPMD()) {
+				typeList.add("PMD");
+			}
+			if (jct.isPPD()) {
+				typeList.add("PPD");
+			}
+			if (jct.isPCI()) {
+				typeList.add("PCI");
+			}
+			if (jct.isPCC()) {
+				typeList.add("PCC");
+			}
+			if (jct.isPCD()) {
+				typeList.add("PCD");
+			}
+			if (jct.isPRV()) {
+				typeList.add("PRV");
+			}
+			if (jct.isOMR()) {
+				typeList.add("OMR");
+			}
+			if (jct.isOMD()) {
+				typeList.add("OMD");
+			}
+			if (jct.isOAN()) {
+				typeList.add("OAN");
+			}
+			if (jct.isJTI()) {
+				typeList.add("JTI");
+			}
+			if (jct.isJTD()) {
+				typeList.add("JTD");
+			}
+			if (jct.isJSI()) {
+				typeList.add("JSI");
+			}
+			if (jct.isJSD()) {
+				typeList.add("JSD");
+			}
+			if (jct.isJID()) {
+				typeList.add("JID");
+			}
+			if (jct.isJDC()) {
+				typeList.add("JDC");
+			}
+			if (jct.isEOA()) {
+				typeList.add("EOA");
+			}
+			if (jct.isEOC()) {
+				typeList.add("EOC");
+			}
+			if (jct.isEAM()) {
+				typeList.add("EAM");
+			}
+			if (jct.isEMM()) {
+				typeList.add("EMM");
+			}
 		}
 
-		// default option, all
+		// default option, all traditional
 		if (typeList.size() == 0) {
 			typeList.add("AORB");
 			typeList.add("AORS");
@@ -486,17 +603,23 @@ public class runmutes {
 		Util.Print("Test Name: " + testSetName);
 		Util.Print("-----------------------------------------------");
 		// read file
-		// get all method names
-		File folder = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName + "/" + MutationSystem.TM_DIR_NAME);
-		File[] listOfMethods = folder.listFiles();
-		if(listOfMethods==null)
-			return;
 		ArrayList<String> methodNameList = new ArrayList<>();
+		ArrayList<String> classMutList = new ArrayList<>();
+		// get all method names
+			File folderTrad = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName + "/" + MutationSystem.TM_DIR_NAME);
+			File[] listOfMethods = folderTrad.listFiles();
 
-		for (File method : listOfMethods) {
+			for (File method : listOfMethods) {
 			if(method.isDirectory())
 				methodNameList.add(method.getName());
-		}
+			}
+		// get all class mutations
+			File folderClass = new File(MutationSystem.MUTANT_HOME + "/" + targetClassName + "/" + MutationSystem.CM_DIR_NAME);
+			File[] listOfClassMuts = folderClass.listFiles();
+
+			for (File method : listOfClassMuts) {
+				classMutList.add(method.getName());
+			}
 
 		/*
 		 * no result files before, no result to read. fresh mode, no need to
@@ -519,6 +642,11 @@ public class runmutes {
 					test_engine.methodList2.add(method.getName());
 				}
 			}
+			for (File method : listOfClassMuts) {
+				if (method.isDirectory()) {
+					test_engine.classMutsList.add(method.getName());
+				}
+			}
 			// First, read (load) test suite class.
 			Util.DebugPrint(targetClassName + " " + testSetName);
 			test_engine.readTestSet(testSetName);
@@ -528,6 +656,7 @@ public class runmutes {
 			test_engine.computeOriginalTestResults();
 			System.out.print("Running");
 			test_result = test_engine.runTraditionalMutants("All method", mutantTypes, percentage);
+			test_engine.runClassMutants("All method", mutantTypes, percentage);
 			return;
 		}
 

@@ -28,16 +28,25 @@ import java.util.Vector;
 
 public class TestResult
 {
-    //all mutants in a class  	
+    //all mutants in a class
 	public Vector mutants = new Vector();
 	//killed mutants in a class
 	public Vector killed_mutants = new Vector();
 	//live mutants in a class
 	public Vector live_mutants = new Vector();
+
+    //all mutants in a class
+	public Vector mutantsClass = new Vector();
+	//killed mutants in a class
+	public Vector killed_mutantsClass = new Vector();
+	//live mutants in a class
+	public Vector live_mutantsClass = new Vector();
+
 	//mutation score
 	public int mutant_score = 0;
-  
+
   public void setMutants(){
-	  mutants = new Vector();	
+	  mutants = new Vector();
+	  mutantsClass = new Vector();
   }
 }

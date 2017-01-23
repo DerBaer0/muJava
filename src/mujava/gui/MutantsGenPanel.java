@@ -247,12 +247,12 @@ public class MutantsGenPanel extends JPanel
       });
       traditional_operator_panel.add(traditionalBPanel);
 
-      
-      // class-level operator selection 
+
+      // class-level operator selection
       JPanel class_operator_panel = new JPanel();
       class_operator_panel.setBorder(new TitledBorder("Class-level"));
-      class_operator_panel.setPreferredSize(new Dimension(140, 550));
-      class_operator_panel.setMaximumSize(new Dimension(140, 550));
+      class_operator_panel.setPreferredSize(new Dimension(140, 700));
+      class_operator_panel.setMaximumSize(new Dimension(140, 700));
       class_operator_panel.setLayout(new BoxLayout(class_operator_panel,BoxLayout.PAGE_AXIS));
       JScrollPane class_operator_scrollP = new JScrollPane();
       class_operator_panel.add(class_operator_scrollP);

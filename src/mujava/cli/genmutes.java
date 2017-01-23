@@ -50,6 +50,8 @@ import mujava.MutationSystem;
 import mujava.OpenJavaException;
 import mujava.TraditionalMutantsGenerator;
 import mujava.TraditionalMutantsGeneratorCLI;
+import mujava.ClassMutantsGenerator;
+import mujava.ClassMutantsGeneratorCLI;
 
 import com.beust.jcommander.JCommander;
 
@@ -145,9 +147,8 @@ public class genmutes {
 
 
 		String[] paras = new String[] { "1", "0" };
-		if (jct.getAll()) // all is selected, add all operators
+		if (jct.getAll() || jct.getAllAll()) // all is selected, add all operators
 		{
-
 			// if all is selected, all mutation operators are added
 			ops.put("AORB", new ArrayList<String>(Arrays.asList(paras)));
 			ops.put("AORS", new ArrayList<String>(Arrays.asList(paras)));
@@ -169,8 +170,39 @@ public class genmutes {
 			ops.put("VDL", new ArrayList<String>(Arrays.asList(paras)));
 			ops.put("CDL", new ArrayList<String>(Arrays.asList(paras)));
 			// ops.put("SDL", jct.getAll());
-
-		} else { // if not all, add selected ops to the list
+		}
+		if (jct.getAllAll()) { // add all class mutants too
+			ops.put("IHI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("IHD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("IOD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("IOP", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("IOR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("ISI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("ISD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("IPC", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PNC", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PMD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PPD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PCI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PCC", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PCD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("PRV", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("OMR", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("OMD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("OAN", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JTI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JTD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JSI", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JSD", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JID", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("JDC", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("EOA", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("EOC", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("EAM", new ArrayList<String>(Arrays.asList(paras)));
+			ops.put("EMM", new ArrayList<String>(Arrays.asList(paras)));
+		}
+		if (!(jct.getAll() || jct.getAllAll())) { // if not all, add selected ops to the list
+			// Traditional Mutants
 			if (jct.getAORB()) {
 				ops.put("AORB", new ArrayList<String>(Arrays.asList(paras)));
 			}
@@ -228,9 +260,95 @@ public class genmutes {
 			if (jct.getCDL()) {
 				ops.put("CDL", new ArrayList<String>(Arrays.asList(paras)));
 			}
+
+			// Class Mutants
+			if (jct.getIHI()) {
+				ops.put("IHI", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getIHD()) {
+				ops.put("IHD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getIOD()) {
+				ops.put("IOD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getIOP()) {
+				ops.put("IOP", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getIOR()) {
+				ops.put("IOR", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getISI()) {
+				ops.put("ISI", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getISD()) {
+				ops.put("ISD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getIPC()) {
+				ops.put("IPC", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPNC()) {
+				ops.put("PNC", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPMD()) {
+				ops.put("PMD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPPD()) {
+				ops.put("PPD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPCI()) {
+				ops.put("PCI", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPCC()) {
+				ops.put("PCC", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPCD()) {
+				ops.put("PCD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getPRV()) {
+				ops.put("PRV", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getOMR()) {
+				ops.put("OMR", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getOMD()) {
+				ops.put("OMD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getOAN()) {
+				ops.put("OAN", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJTI()) {
+				ops.put("JTI", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJTD()) {
+				ops.put("JTD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJSI()) {
+				ops.put("JSI", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJSD()) {
+				ops.put("JSD", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJID()) {
+				ops.put("JID", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getJDC()) {
+				ops.put("JDC", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getEOA()) {
+				ops.put("EOA", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getEOC()) {
+				ops.put("EOC", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getEAM()) {
+				ops.put("EAM", new ArrayList<String>(Arrays.asList(paras)));
+			}
+			if (jct.getEMM()) {
+				ops.put("EMM", new ArrayList<String>(Arrays.asList(paras)));
+			}
 		}
 
-		// add default option "all"
+		// add default option "all" (traditional)
 		if (ops.size() == 0) {
 			ops.put("AORB", new ArrayList<String>(Arrays.asList(paras)));
 			ops.put("AORS", new ArrayList<String>(Arrays.asList(paras)));
@@ -356,25 +474,45 @@ public class genmutes {
 				tmGenEngine = new TraditionalMutantsGeneratorCLI(original_file, opArray);
 				tmGenEngine.makeMutants();
 				tmGenEngine.compileMutants();
-								
-			      // Lin add printing total mutants
-				// get all file names
-				File folder = new File(MutationSystem.MUTANT_HOME + "/" + class_name + "/" + MutationSystem.TM_DIR_NAME);
-				File[] listOfMethods = folder.listFiles();
 
-				//ArrayList<String> fileNameList = new ArrayList<>();
+				ClassMutantsGeneratorCLI tmGenEngineC;
+				tmGenEngineC = new ClassMutantsGeneratorCLI(original_file, opArray);
+				tmGenEngineC.makeMutants();
+				tmGenEngineC.compileMutants();
+
+			      // Lin add printing total mutants
 				int total_mutants = 0;
-				for (File method : listOfMethods) {
-					//fileNameList.add(method.getName());
-					if(method.isDirectory())
-					{
-						File[] listOfMutants = method.listFiles();
-						total_mutants = total_mutants+listOfMutants.length;
-						
+			    {
+					// get all file names of traditional mutants
+					File folder = new File(MutationSystem.MUTANT_HOME + "/" + class_name + "/" + MutationSystem.TM_DIR_NAME);
+					File[] listOfMethods = folder.listFiles();
+
+					//ArrayList<String> fileNameList = new ArrayList<>();
+					for (File method : listOfMethods) {
+						//fileNameList.add(method.getName());
+						if(method.isDirectory())
+						{
+							File[] listOfMutants = method.listFiles();
+							total_mutants = total_mutants+listOfMutants.length;
+
+						}
 					}
 				}
-								
-				
+				{
+					// get all file names of class mutants
+					File folder = new File(MutationSystem.MUTANT_HOME + "/" + class_name + "/" + MutationSystem.CM_DIR_NAME);
+					File[] listOfMethods = folder.listFiles();
+
+					//ArrayList<String> fileNameList = new ArrayList<>();
+					for (File method : listOfMethods) {
+						//fileNameList.add(method.getName());
+						if(method.isDirectory())
+						{
+							total_mutants++;
+						}
+					}
+				}
+
 //				File muTotalFile = new File(MutationSystem.MUTANT_PATH,"mutation_log");
 //				String strLine;
 //		         LineNumberReader lReader = new LineNumberReader(new FileReader(muTotalFile));

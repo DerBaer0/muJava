@@ -51,9 +51,23 @@ public class TestResultCLI extends TestResult {
 
 	public String path = new String();
 
-	public void outputToFile(String method) throws IOException {
+	/**
+	 * \brief tradMutants
+	 * true: print traditional mutants
+	 * false: print class mutants
+	 */
+	public void outputToFile(String method, boolean tradMutants) throws IOException {
 		//displayResultConsole();
-
+		Vector mutants_, killed_mutants_, live_mutants_;
+		if (tradMutants) {
+			mutants_ = mutants;
+			killed_mutants_ = killed_mutants;
+			live_mutants_ = live_mutants;
+		} else {
+			mutants_ = mutantsClass;
+			killed_mutants_ = killed_mutantsClass;
+			live_mutants_ = live_mutantsClass;
+		}
 		File f = new File(path);
 
 		if (runmutes.mode.equals("fresh")) // fresh mode, need to save with time
@@ -61,19 +75,19 @@ public class TestResultCLI extends TestResult {
 		{
 			if(!TestExecuterCLI.methodList.contains(method))
 				{System.out.println("ERROR");return;}
-			
+
 			TestExecuterCLI.methodList.remove(method);
-			
+
 			// merge results
-			Util.mutants.addAll(mutants);
-			Util.killed_mutants.addAll(killed_mutants);
-			Util.live_mutants.addAll(live_mutants);
+			Util.mutants.addAll(mutants_);
+			Util.killed_mutants.addAll(killed_mutants_);
+			Util.live_mutants.addAll(live_mutants_);
 			Util.eq_mutants.addAll(eq_mutants);
-			
+
 			// if no methods left, save file
 			// else continue
 			if(TestExecuterCLI.methodList.size()==0)
-			{	
+			{
 				// get time
 				Calendar nowtime = new GregorianCalendar();
 
@@ -120,14 +134,14 @@ public class TestResultCLI extends TestResult {
 			FileOutputStream fout = new FileOutputStream(f);
 			StringBuffer fileContent = new StringBuffer();
 
-			fileContent.append("killed mutants (" + killed_mutants.size() + "): ");
-			for (Object object : killed_mutants) {
+			fileContent.append("killed mutants (" + killed_mutants_.size() + "): ");
+			for (Object object : killed_mutants_) {
 				fileContent.append(object.toString() + ", ");
 			}
 			fileContent.append("\r\n");
 
-			fileContent.append("live mutants (" + live_mutants.size() + "): ");
-			for (Object object : live_mutants) {
+			fileContent.append("live mutants (" + live_mutants_.size() + "): ");
+			for (Object object : live_mutants_) {
 				fileContent.append(object.toString() + ", ");
 			}
 			fileContent.append("\r\n");
@@ -404,7 +418,7 @@ public class TestResultCLI extends TestResult {
 
 	}
 
-	public void markEqvl(String eqMutant) throws IOException {
+	public void markEqvl(String eqMutant, boolean tradMutants) throws IOException {
 
 		if (!live_mutants.contains(eqMutant))
 			return;
@@ -413,7 +427,7 @@ public class TestResultCLI extends TestResult {
 		eq_mutants.add(eqMutant);
 
 		// write file
-		outputToFile(" ");
+		outputToFile(" ", tradMutants);
 
 	}
 

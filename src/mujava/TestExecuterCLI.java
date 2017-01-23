@@ -62,6 +62,7 @@ public class TestExecuterCLI extends TestExecuter {
 //	int TIMEOUT = 3000;
 	public static ArrayList<String> methodList = new ArrayList<>();
 	public static ArrayList<String> methodList2 = new ArrayList<>();
+	public static ArrayList<String> classMutsList = new ArrayList<>();
 
 	public TestExecuterCLI(String targetClassName) {
 		super(targetClassName);
@@ -217,7 +218,7 @@ public class TestExecuterCLI extends TestExecuter {
 		}
 	}
 
-	private TestResultCLI runMutants(TestResultCLI tr, String methodSignature) throws NoMutantException, NoMutantDirException {
+	private TestResultCLI runMutants(TestResultCLI tr, String methodSignature, boolean tradMutants) throws NoMutantException, NoMutantDirException {
 
 		try {
 
@@ -448,9 +449,13 @@ public class TestExecuterCLI extends TestExecuter {
 			// + nowtime.get(Calendar.MINUTE) + "_"
 			// + nowtime.get(Calendar.SECOND));
 
-			tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
+			if (tradMutants) {
+				tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
+			} else {
+				tr.setPath(MutationSystem.CLASS_MUTANT_PATH + "/mutant_list");
+			}
 
-			tr.outputToFile(methodSignature);
+			tr.outputToFile(methodSignature, tradMutants);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -482,7 +487,7 @@ public class TestExecuterCLI extends TestExecuter {
 					try {
 						test_result = new TestResultCLI();
 						// run each method
-						runMutants(test_result, readSignature, mutantTypes, percentage);
+						runMutants(test_result, readSignature, mutantTypes, percentage, true);
 					} catch (NoMutantException e) {
 					}
 					readSignature = reader.readLine();
@@ -493,12 +498,25 @@ public class TestExecuterCLI extends TestExecuter {
 			}
 		} else {
 			MutationSystem.MUTANT_PATH = original_mutant_path + "/" + methodSignature;
-			runMutants(test_result, methodSignature, mutantTypes, 1);
+			runMutants(test_result, methodSignature, mutantTypes, 1, true);
 		}
 		return test_result;
 	}
 
-	private TestResultCLI runMutants(TestResultCLI tr, String methodSignature, String[] mutantTypes, double percentage)
+	public TestResultCLI runClassMutants(String methodSignature, String[] mutantTypes, double percentage)
+			throws NoMutantException, NoMutantDirException {
+		MutationSystem.MUTANT_PATH = MutationSystem.CLASS_MUTANT_PATH;
+		String original_mutant_path = MutationSystem.MUTANT_PATH;
+
+		TestResultCLI test_result = new TestResultCLI();
+
+		MutationSystem.MUTANT_PATH = original_mutant_path;
+		System.out.println(">>>> Runnning class mutants: " + mutantTypes.length);
+		runMutants(test_result, "", mutantTypes, 1, false);
+		return test_result;
+	}
+
+	private TestResultCLI runMutants(TestResultCLI tr, String methodSignature, String[] mutantTypes, double percentage, boolean tradMutants)
 			throws NoMutantException, NoMutantDirException {
 		try {
 
@@ -506,13 +524,17 @@ public class TestExecuterCLI extends TestExecuter {
 			// Lin adds: only run certain type
 			int mutant_num = mutantDirectories.length;
 			tr.setMutants();
-			
+
 			for (String mutantType : mutantTypes) {
 
 				for (int i = 0; i < mutant_num; i++) {
 					// set live mutants
 					if (mutantDirectories[i].contains(mutantType)) {
-						tr.mutants.add(mutantDirectories[i]);
+						if (tradMutants) {
+							tr.mutants.add(mutantDirectories[i]);
+						} else {
+							tr.mutantsClass.add(mutantDirectories[i]);
+						}
 					}
 
 				}
@@ -522,16 +544,29 @@ public class TestExecuterCLI extends TestExecuter {
 
 			// Lin adds: eliminate extra mutants based on random percentage
 			if (percentage != 1) {
-				int rondomSize = (int) (tr.mutants.size() * percentage);
+				int rondomSize;
+				if (tradMutants) {
+					rondomSize = (int) (tr.mutants.size() * percentage);
+				} else {
+					rondomSize = (int) (tr.mutantsClass.size() * percentage);
+				}
 				Random rand = new Random(System.currentTimeMillis());
 				Vector tempMutantVector = new Vector(rondomSize);
 				for (int i = 0; i < rondomSize; i++) {
 					// be sure to use Vector.remove() or you may get the same
 					// item
 					// twice
-					tempMutantVector.add(tr.mutants.remove(rand.nextInt(tr.mutants.size())));
+					if (tradMutants) {
+						tempMutantVector.add(tr.mutants.remove(rand.nextInt(tr.mutants.size())));
+					} else {
+						tempMutantVector.add(tr.mutantsClass.remove(rand.nextInt(tr.mutantsClass.size())));
+					}
 				}
-				tr.mutants = tempMutantVector;
+				if (tradMutants) {
+					tr.mutants = tempMutantVector;
+				} else {
+					tr.mutantsClass = tempMutantVector;
+				}
 			}
 
 			// result againg original class for each test case
@@ -540,9 +575,20 @@ public class TestExecuterCLI extends TestExecuter {
 			// String[] killed_mutants = new String[testCases.length];
 
 			Debug.println("\n\n======================================== Executing Mutants ========================================");
-			for (int i = 0; i < tr.mutants.size(); i++) {
+			int sz;
+			if (tradMutants) {
+				sz = tr.mutants.size();
+			} else {
+				sz = tr.mutantsClass.size();
+			}
+			for (int i = 0; i < sz; i++) {
 				// read the information for the "i"th live mutant
-				String mutant_name = tr.mutants.get(i).toString();
+				String mutant_name;
+				if (tradMutants) {
+					mutant_name = tr.mutants.get(i).toString();
+				} else {
+					mutant_name = tr.mutantsClass.get(i).toString();
+				}
 				finalMutantResults.put(mutant_name, "");
 				JMutationLoader mutantLoader = new JMutationLoader(mutant_name);
 				// mutantLoader.loadMutant();
@@ -713,18 +759,31 @@ public class TestExecuterCLI extends TestExecuter {
 							finalMutantResults.put(mutant_name, finalMutantResults.get(mutant_name) + ", " + name);
 					}
 				}
-				if (sign == true)
-					tr.killed_mutants.add(mutant_name);
-				else
-					tr.live_mutants.add(mutant_name);
+				if (tradMutants) {
+					if (sign == true)
+						tr.killed_mutants.add(mutant_name);
+					else
+						tr.live_mutants.add(mutant_name);
+				} else {
+					if (sign == true)
+						tr.killed_mutantsClass.add(mutant_name);
+					else
+						tr.live_mutantsClass.add(mutant_name);
+				}
 
 				mutantLoader = null;
 				mutant_executer = null;
 				System.gc();
 			}
 
-			for (int i = 0; i < tr.killed_mutants.size(); i++) {
-				tr.live_mutants.remove(tr.killed_mutants.get(i));
+			if (tradMutants) {
+				for (int i = 0; i < tr.killed_mutants.size(); i++) {
+					tr.live_mutants.remove(tr.killed_mutants.get(i));
+				}
+			} else {
+				for (int i = 0; i < tr.killed_mutantsClass.size(); i++) {
+					tr.live_mutantsClass.remove(tr.killed_mutantsClass.get(i));
+				}
 			}
 			/*
 			 * System.out.println(" Analysis of testcases "); for(int i = 0;i <
@@ -757,8 +816,12 @@ public class TestExecuterCLI extends TestExecuter {
 																								// csv
 																								// file
 
-			tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
-			tr.outputToFile(methodSignature);
+			if (tradMutants) {
+				tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
+			} else {
+				tr.setPath(MutationSystem.CLASS_MUTANT_PATH + "/mutant_list");
+			}
+			tr.outputToFile(methodSignature, tradMutants);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -786,7 +849,7 @@ public class TestExecuterCLI extends TestExecuter {
 
 					MutationSystem.MUTANT_PATH = original_mutant_path + "/" + readSignature;
 					try {
-						runMutants(test_result, readSignature, mutantTypes, percentage, live_mutants);
+						runMutants(test_result, readSignature, mutantTypes, percentage, live_mutants, true);
 					} catch (NoMutantException e) {
 					}
 					readSignature = reader.readLine();
@@ -797,13 +860,13 @@ public class TestExecuterCLI extends TestExecuter {
 			}
 		} else {
 			MutationSystem.MUTANT_PATH = original_mutant_path + "/" + methodSignature;
-			runMutants(test_result, methodSignature, mutantTypes, 1);
+			runMutants(test_result, methodSignature, mutantTypes, 1, true);
 		}
 		return test_result;
 	}
 
 	private TestResultCLI runMutants(TestResultCLI tr, String methodSignature, String[] mutantTypes, double percentage,
-			Vector live_mutants) throws NoMutantException, NoMutantDirException {
+			Vector live_mutants, boolean tradMutants) throws NoMutantException, NoMutantDirException {
 		try {
 
 			String[] mutantDirectories = getMutants(methodSignature);
@@ -1053,9 +1116,13 @@ public class TestExecuterCLI extends TestExecuter {
 																								// file
 
 
-			tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
+			if (tradMutants) {
+				tr.setPath(MutationSystem.TRADITIONAL_MUTANT_PATH + "/mutant_list");
+			} else {
+				tr.setPath(MutationSystem.CLASS_MUTANT_PATH + "/mutant_list");
+			}
 
-			tr.outputToFile(methodSignature);
+			tr.outputToFile(methodSignature, tradMutants);
 
 		} catch (IOException e) {
 			e.printStackTrace();

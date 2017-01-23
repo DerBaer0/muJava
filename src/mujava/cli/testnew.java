@@ -48,6 +48,7 @@ public class testnew {
 		testnewCom jct = new testnewCom();
 		String[] argv = { "Flower", "/Users/dmark/mujava/src/Flower" };
 		new JCommander(jct, args);
+		Util.configFile = jct.getConfigFile();
 
 		muJavaHomePath = Util.loadConfig();
 		// muJavaHomePath= "/Users/dmark/mujava";

@@ -141,14 +141,14 @@ public class TestExecuter {
   public TestResult runClassMutants()  throws NoMutantException,NoMutantDirException{
     MutationSystem.MUTANT_PATH = MutationSystem.CLASS_MUTANT_PATH;
     TestResult test_result = new TestResult();
-    runMutants(test_result, "");
+    runMutants(test_result, "", false);
     return test_result;
   }
 
   public TestResult runExceptionMutants()  throws NoMutantException,NoMutantDirException{
     MutationSystem.MUTANT_PATH = MutationSystem.EXCEPTION_MUTANT_PATH;
     TestResult test_result = new TestResult();
-    runMutants(test_result, "");
+    runMutants(test_result, "", false);
     return test_result;
   }
 
@@ -171,7 +171,7 @@ public class TestExecuter {
 
             MutationSystem.MUTANT_PATH = original_mutant_path + "/" + readSignature;
             try{
-              runMutants(test_result, readSignature);
+              runMutants(test_result, readSignature, true);
             }catch(NoMutantException e){
             }
             readSignature = reader.readLine();
@@ -184,7 +184,7 @@ public class TestExecuter {
         }
     }else{
       MutationSystem.MUTANT_PATH = original_mutant_path + "/" + methodSignature;
-      runMutants(test_result, methodSignature);
+      runMutants(test_result, methodSignature, true);
     }
     return test_result;
   }
@@ -332,17 +332,24 @@ public class TestExecuter {
      }
       }
 
-   private TestResult runMutants(TestResult tr, String methodSignature) throws NoMutantException,NoMutantDirException{
+   private TestResult runMutants(TestResult tr, String methodSignature, boolean tradMutants) throws NoMutantException,NoMutantDirException{
     try{
 
       String[] mutantDirectories = getMutants(methodSignature);
       
       int mutant_num = mutantDirectories.length;
       tr.setMutants();
-      for(int i = 0;i < mutant_num;i++){
-          // set live mutnats
-          tr.mutants.add(mutantDirectories[i]);
-      }
+      if (tradMutants) {
+		  for(int i = 0;i < mutant_num;i++){
+		      // set live mutnats
+		      tr.mutants.add(mutantDirectories[i]);
+		  }
+	} else {
+		  for(int i = 0;i < mutant_num;i++){
+		      // set live mutnats
+		      tr.mutantsClass.add(mutantDirectories[i]);
+		  }
+	}
 
       // result againg original class for each test case
      // Object[] original_results = new Object[testCases.length];
@@ -350,16 +357,27 @@ public class TestExecuter {
       //String[] killed_mutants = new String[testCases.length];
 
       Debug.println("\n\n======================================== Executing Mutants ========================================");
-      for(int i = 0; i < tr.mutants.size(); i++){
+      int sz;
+      if (tradMutants) {
+      	sz = tr.mutants.size();
+      } else {
+      	sz = tr.mutantsClass.size();
+      }
+      for(int i = 0; i < sz; i++){
         // read the information for the "i"th live mutant
-        String mutant_name = tr.mutants.get(i).toString();
+        String mutant_name;
+        if (tradMutants) {
+        	mutant_name = tr.mutants.get(i).toString();
+        } else {
+        	mutant_name = tr.mutantsClass.get(i).toString();
+        }
         finalMutantResults.put(mutant_name, "");
         JMutationLoader mutantLoader = new JMutationLoader(mutant_name);
         //mutantLoader.loadMutant();
         mutant_executer = mutantLoader.loadTestClass(testSet);
         mutant_obj = mutant_executer.newInstance();
         Debug.print("  " + mutant_name);
-        
+
 
         try{
         // Mutants are runned using Thread to detect infinite loop caused by mutation
@@ -483,20 +501,32 @@ public class TestExecuter {
     			  finalMutantResults.put(mutant_name, finalMutantResults.get(mutant_name) + ", " + name);
     	  }
       }
-      if(sign == true)
-		  tr.killed_mutants.add(mutant_name);
-	  else
-		  tr.live_mutants.add(mutant_name);
-      
-      
+      if (tradMutants) {
+		  if(sign == true)
+			  tr.killed_mutants.add(mutant_name);
+		  else
+			  tr.live_mutants.add(mutant_name);
+      } else {
+      	  if(sign == true)
+			  tr.killed_mutantsClass.add(mutant_name);
+		  else
+			  tr.live_mutantsClass.add(mutant_name);
+      }
+
         mutantLoader = null;
         mutant_executer = null;
         System.gc();
       }
- 
-      for(int i = 0;i < tr.killed_mutants.size();i++){
-        tr.live_mutants.remove(tr.killed_mutants.get(i));
-      }
+
+		if (tradMutants) {
+			for(int i = 0;i < tr.killed_mutants.size();i++){
+				tr.live_mutants.remove(tr.killed_mutants.get(i));
+			}
+		} else {
+			for(int i = 0;i < tr.killed_mutantsClass.size();i++){
+				tr.live_mutantsClass.remove(tr.killed_mutantsClass.get(i));
+			}
+		}
 /*
       System.out.println(" Analysis of testcases ");
       for(int i = 0;i < killed_mutants.length;i++){

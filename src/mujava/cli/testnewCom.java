@@ -51,6 +51,10 @@ class testnewCom {
 	  @Parameter(names = "-d", description = "Debug mode")
 	  private boolean debugMode = false;
 
+	  // use non-default config file
+	  @Parameter(names = "-config", description = "Config file")
+	  private String configFile = null;
+
 	public List<String> getParameters()
 	{
 		return parameters;
@@ -97,7 +101,14 @@ class testnewCom {
 		this.debugMode = debugMode;
 	}
 
-	  
+	public String getConfigFile() {
+		return configFile;
+	}
+
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
+  
 
 
 

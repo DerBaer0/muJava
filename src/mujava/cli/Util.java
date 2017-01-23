@@ -51,6 +51,9 @@ public class Util
 	public static Map<String, String> finalTestResultsMap =  new HashMap<>();
 	public static Map<String, String> finalMutantResultsMap = new HashMap<>();
 	
+	// use this file instead of the hardcoded name
+	public static String configFile;
+	
 	public static void setUpVectors()
 	{
 	    //all mutants in a class  	
@@ -90,7 +93,7 @@ public class Util
 	 * load config file
 	 */
 	static String loadConfig() throws IOException {
-		FileInputStream inputStream = new FileInputStream("mujavaCLI.config");
+		FileInputStream inputStream = new FileInputStream((configFile==null)?"mujavaCLI.config":configFile);
 
 		String input = IOUtils.toString(inputStream);
 		String[] inputs = input.split("\n");
